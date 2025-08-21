@@ -1,0 +1,61 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
+#include "Components/ActorComponent.h"
+#include "SActionComponent.generated.h"
+
+class USAction;
+
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class LETMERUN_API USActionComponent : public UActorComponent
+{
+	GENERATED_BODY()
+
+public:	
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Tag")
+	FGameplayTagContainer ActiveGamePlayTags;
+	
+	UFUNCTION(BlueprintCallable, Category = "Actions")
+	void AddAction(AActor* Instigator, TSubclassOf<USAction> ActionClass);
+
+	UFUNCTION(BlueprintCallable, Category = "Actions")
+	void RemoveAction(USAction* ActionToRemove);
+
+	UFUNCTION(BlueprintCallable, Category = "Actions")
+	bool StartActionByName(AActor* Instigator, FName ActionName);
+
+	UFUNCTION(BlueprintCallable, Category = "Actions")
+	bool StopActionByName(AActor* Instigator, FName ActionName);
+
+	USActionComponent();
+
+protected:
+	/* Granted abilities at game start
+	 * Add actions in here otherwise it doesn't work
+	 */
+	UPROPERTY(EditAnywhere, Category = "Actions")
+	TArray< TSubclassOf<USAction>> DefaultActions;
+
+	UPROPERTY(Replicated)
+	TArray<USAction*> Actions;
+
+	UFUNCTION(Server,Reliable)
+	void ServerStartAction(AActor* Instigator, FName ActionName);
+
+	UFUNCTION(Server,Reliable)
+	void ServerStopAction(AActor* Instigator, FName ActionName);
+	
+	virtual void BeginPlay() override;
+
+	bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags);
+	
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
+public:
+	
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
+};
