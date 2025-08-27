@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "SPlayerController.generated.h"
 
+class UInputAction;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPawnChanged, APawn*, NewPawn);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStateChanged, APlayerState*, NewPlayerState);
@@ -18,7 +19,6 @@ class LETMERUN_API ASPlayerController : public APlayerController
 	GENERATED_BODY()
 
 protected:
-	
 	// Listen for incoming player state (for clients this may be nullptr when initially joining a game, 
 	// afterwards player state will not change again as PlayerControllers maintain the same player state throughout the level)
 	UPROPERTY(BlueprintAssignable)
@@ -37,4 +37,22 @@ protected:
 	void BlueprintBeginPlayingState();
 
 	void OnRep_PlayerState() override;
+
+	//===For Pause Menu===
+	
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="PlayerInput",meta=(AllowPrivateAccess=true))
+	UInputAction* PlayerPause;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> PauseMenuClass;
+
+	UPROPERTY()
+	UUserWidget* PauseMenuInstance;
+
+	UFUNCTION(BlueprintCallable)
+	void TogglePauseMenu();
+
+	void SetupInputComponent() override;
+	
+	//=========================
 };

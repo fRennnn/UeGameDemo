@@ -12,6 +12,7 @@ class ASPlayerState;
 class UEnvQuery;
 class UEnvQueryInstanceBlueprintWrapper;
 class UCurveFloat;
+class USSaveGame;
 /**
  * 
  */
@@ -25,6 +26,11 @@ protected:
 	
 	FTimerHandle TimerHandle_SpawnBots;
 	FTimerHandle TimerHandle_SpawnPowerUps;
+
+	UPROPERTY()
+	USSaveGame* CurrentSaveGame;
+
+	FString SlotName;
 
 	UPROPERTY(EditDefaultsOnly,Category="AI")
 	TSubclassOf<AActor> MinionClass;
@@ -73,11 +79,20 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
 	int32 CreditsPerKill;
+
+	
 public:
 	virtual void StartPlay() override;
 
+	void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
+
+	void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer);
 	virtual void OnActorKilled(AActor* VictimActor,AActor* Killer);
 	UFUNCTION(Exec)
 	void KillAllBot();
-	
+
+	UFUNCTION(BluePrintCallable)
+	void WriteSaveGame();
+ 
+	void LoadSaveGame();
 };

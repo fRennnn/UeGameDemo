@@ -8,12 +8,18 @@
 
 #include "SGameModeBase.h"
 
+#include "Constraint.h"
 #include "EngineUtils.h"
 #include "SAttributeComponent.h"
 #include "SCharacter.h"
+#include "SGameplayInterface.h"
+#include "SSaveGame.h"
 #include "AI/SAICharacter.h"
 #include "Assignment5/SPlayerState.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
+#include "GameFramework/GameStateBase.h"
+#include "Kismet/GameplayStatics.h"
+#include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("su.SpawnBots"), true, TEXT("Enable spawning of bots via timer."), ECVF_Cheat);
 
@@ -24,6 +30,8 @@ ASGameModeBase::ASGameModeBase()
 	Credit = 0;
 	CreditsPerKill = 10.f;
 	PlayerStateClass = ASPlayerState::StaticClass();
+
+	SlotName = "SaveGame01";
 }
 
 void ASGameModeBase::StartPlay()
@@ -40,6 +48,15 @@ void ASGameModeBase::StartPlay()
 		UE_LOG(LogTemp,Error,TEXT("Can not find the PowerupClasses!!!"));
 	}
 	
+}
+
+void ASGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	Super::InitGame(MapName, Options, ErrorMessage);
+
+	LoadSaveGame();
+
+	UE_LOG(LogTemp,Display,TEXT("Loading Game Data"));
 }
 
 void ASGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
@@ -145,8 +162,8 @@ void ASGameModeBase::RespawnPlayerElapsed(AController* Controller)
 	}
 } 
 
-// Conment  : Spawn AI Bot after EQS Query return Success
-// Function : Spawn AI Bot
+// Conment: Spawn AI Bot after EQS Query return Success
+// Function: Spawn AI Bot
 void ASGameModeBase::OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus)
 { 
 	if (QueryStatus != EEnvQueryStatus::Success)
@@ -182,6 +199,101 @@ void ASGameModeBase::OnPowerupSpawnQueryCompleted(UEnvQueryInstanceBlueprintWrap
 	}
 }
 
+// SaveGame
+void ASGameModeBase::WriteSaveGame()
+{
+	for (int32 i = 0; i < GameState->PlayerArray.Num(); i++)
+	{
+		ASPlayerState* PS = Cast<ASPlayerState>(GameState->PlayerArray[i]);
+		if (PS)
+		{
+			PS->SavePlayerState(CurrentSaveGame);
+			break;
+		}
+	}
 
+	CurrentSaveGame->SavedActors.Empty();
+
+	// Save all the actor that we can interact.
+	for (FActorIterator It(GetWorld());	It;	++It)
+	{
+		AActor* Actor = *It;
+		if (!Actor->Implements<USGameplayInterface>())
+		{
+			continue;
+		}
+
+		FActorSaveData SaveData;
+		SaveData.ActorName = Actor->GetName();
+		SaveData.Transform = Actor->GetActorTransform();
+
+		
+		FMemoryWriter MemWriter(SaveData.ByteData);
+		FObjectAndNameAsStringProxyArchive Ar(MemWriter, true);
+		Ar.ArIsSaveGame = true;
+		Actor->Serialize(Ar);
+
+		
+		CurrentSaveGame->SavedActors.Add(SaveData);
+	}
+	UGameplayStatics::SaveGameToSlot(CurrentSaveGame,SlotName,0);
+}
+
+void ASGameModeBase::LoadSaveGame()
+{
+	if (UGameplayStatics::DoesSaveGameExist(SlotName,0))
+	{
+		CurrentSaveGame =  Cast<USSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName,0));
+		if (CurrentSaveGame == nullptr)
+		{			
+			UE_LOG(LogTemp,Warning, TEXT("Failed to load the SaveGame data"));
+			return;
+		}
+
+		// Find the Actor we saved, and set its transform
+		for (FActorIterator It(GetWorld());	It;	++It)
+		{
+			AActor* Actor = *It;
+			if (!Actor->Implements<USGameplayInterface>())
+			{
+				continue;
+			}
+
+			for (FActorSaveData ActorData : CurrentSaveGame->SavedActors)
+			{
+				if (ActorData.ActorName == Actor->GetName())
+				{
+					Actor->SetActorTransform(ActorData.Transform);
+
+					FMemoryReader MemReader(ActorData.ByteData);
+
+					FObjectAndNameAsStringProxyArchive Ar(MemReader, true);
+					Ar.ArIsSaveGame = true;
+					Actor->Serialize(Ar);
+
+					ISGameplayInterface::Execute_OnActorLoaded(Actor);
+					break;
+				}
+			}
+		}
+	}else
+	{
+		CurrentSaveGame = Cast<USSaveGame>(UGameplayStatics::CreateSaveGameObject(USSaveGame::StaticClass()));
+
+		UE_LOG(LogTemp, Log, TEXT("Created New SaveGame Data."));
+	}
+}
+
+void ASGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
+{
+	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
+
+	ASPlayerState* PS = NewPlayer->GetPlayerState<ASPlayerState>();
+	if (PS)
+	{
+		PS->LoadPlayerState(CurrentSaveGame);
+		UE_LOG(LogTemp,Log,TEXT("Loading Player State"));
+	}
+}
 
 

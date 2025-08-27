@@ -27,7 +27,6 @@ void ASItemChest::BeginPlay()
 	Super::BeginPlay();
 }
 
-
 // Called every frame
 void ASItemChest::Tick(float DeltaTime)
 {
@@ -52,3 +51,9 @@ void ASItemChest::Interact_Implementation(APawn* InstigatorPawn)
 	bLidOpened = !bLidOpened;
 	OnRep_LidOpened();
 }
+
+void ASItemChest::OnActorLoaded_Implementation()
+{
+	OnRep_LidOpened();
+}
+

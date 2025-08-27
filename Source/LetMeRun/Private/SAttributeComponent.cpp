@@ -69,7 +69,7 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor,float Delta
 			MulticastHealthChanged(InstigatorActor, Health, ActualDelta);
 		}
 
-		// If Actor Died
+		// If the Actor Died
 		if (ActualDelta <0.f && Health == 0.f)
 		{
 			ASGameModeBase* GM = GetWorld()->GetAuthGameMode<ASGameModeBase>();

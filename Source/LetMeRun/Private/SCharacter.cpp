@@ -114,7 +114,6 @@ void ASCharacter::PostInitializeComponents()
 void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth,
                                   float Delta)
 {
-
 	// Damaged
 	if (Delta < 0.0f)
 	{

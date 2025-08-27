@@ -18,6 +18,9 @@ public:
 	float TargetPitch;
 
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
+	
+	void OnActorLoaded_Implementation();
+
 public:	
 	// Sets default values for this actor's properties
 	ASItemChest();
@@ -26,7 +29,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-
+	
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -39,11 +43,13 @@ protected:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	UStaticMeshComponent* LidMesh;
 
-	UPROPERTY(ReplicatedUsing="OnRep_LidOpened", BlueprintReadOnly) // RepNotify
+	UPROPERTY(ReplicatedUsing="OnRep_LidOpened", BlueprintReadOnly,SaveGame) // RepNotify
 	bool bLidOpened;
 
 	UFUNCTION()
 	void OnRep_LidOpened();
+
+	
 	
 
 };

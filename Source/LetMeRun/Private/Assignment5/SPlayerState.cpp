@@ -3,6 +3,7 @@
 
 #include "Assignment5/SPlayerState.h"
 
+#include "SSaveGame.h"
 #include "Net/UnrealNetwork.h"
 
 void ASPlayerState::AddCredits(int32 Delta)
@@ -54,4 +55,22 @@ void ASPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ASPlayerState, Credits);
+}
+
+// Save Game
+
+void ASPlayerState::LoadPlayerState_Implementation(USSaveGame* SaveObject)
+{
+	if (SaveObject)
+	{
+		Credits = SaveObject->Credits;
+	}	
+}
+
+void ASPlayerState::SavePlayerState_Implementation(USSaveGame* SaveObject)
+{
+	if (SaveObject)
+	{
+		SaveObject->Credits = Credits;
+	}	
 }
