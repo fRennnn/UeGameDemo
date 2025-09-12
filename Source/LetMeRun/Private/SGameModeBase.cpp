@@ -16,9 +16,13 @@
 #include "SSaveGame.h"
 #include "AI/SAICharacter.h"
 #include "Assignment5/SPlayerState.h"
+#include "Data/SMonsterData.h"
+#include "Engine/AssetManager.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "GameFramework/GameStateBase.h"
+#include "GAS/SActionComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "LetMeRun/LetMeRun.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("su.SpawnBots"), true, TEXT("Enable spawning of bots via timer."), ECVF_Cheat);
@@ -113,7 +117,7 @@ void ASGameModeBase::SpawnPowersUpElapsed()
 // Spawn AI Bot in the map
 void ASGameModeBase::SpawnBotTimerElapsed()
 {
-	// this is for Debug
+	// this is for Debug, true to stop.
 	if(CVarSpawnBots.GetValueOnGameThread())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Bot spawning disabled via cvar 'CVarSpawnBots'."));
@@ -176,7 +180,26 @@ void ASGameModeBase::OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryIn
 
 	if (Location.IsValidIndex(0))
 	{
-		GetWorld()->SpawnActor<AActor>(MinionClass,Location[0],FRotator::ZeroRotator);
+		if (MonsterTable)
+		{
+			TArray<FMonsterInfoRow*> Rows; 
+			MonsterTable->GetAllRows("",Rows);
+
+			int32 RandomIndex = FMath::RandRange(0,Rows.Num()-1);
+			FMonsterInfoRow* SelectedRow = Rows[RandomIndex];
+
+			UAssetManager* Manager = UAssetManager::GetIfInitialized();
+			if (Manager)
+			{
+				TArray<FName> Bundles;
+				FStreamableDelegate Delegate = FStreamableDelegate::CreateUObject(this,
+					&ASGameModeBase::OnMonsterLoaded,
+					SelectedRow->MonsterID,
+					Location[0]);
+				
+				Manager->LoadPrimaryAsset(SelectedRow->MonsterID,Bundles,Delegate);
+			}
+		}
 	}
 }
 
@@ -185,7 +208,7 @@ void ASGameModeBase::OnPowerupSpawnQueryCompleted(UEnvQueryInstanceBlueprintWrap
 {
 	if (QueryStatus != EEnvQueryStatus::Success)
 	{
-		UE_LOG(LogTemp,Error,TEXT("Spawn bot EQS Query Failed!!!"));
+		UE_LOG(LogTemp,Error,TEXT("Spawn PowerUp EQS Query Failed!!!"));
 		return;
 	}
 
@@ -196,6 +219,35 @@ void ASGameModeBase::OnPowerupSpawnQueryCompleted(UEnvQueryInstanceBlueprintWrap
 		TSubclassOf<AActor> RandomClass = PowerupClasses[RandomClassIdx];
 
 		GetWorld()->SpawnActor<AActor>(RandomClass,Location[0],FRotator::ZeroRotator);
+	}
+}
+
+void ASGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedID, FVector SpawnLocation)
+{
+	LogOnScreen(this, "Finished loading.", FColor::Green);
+	
+	UAssetManager* Manager = UAssetManager::GetIfValid();
+	if (Manager)
+	{
+		USMonsterData* MonsterData = Cast<USMonsterData>(Manager->GetPrimaryAssetObject(LoadedID));
+		if (MonsterData)
+		{
+			AActor* NewBot = GetWorld()->SpawnActor<AActor>(MonsterData->MonsterClass, SpawnLocation, FRotator::ZeroRotator);
+			if (NewBot)
+			{
+				LogOnScreen(this, FString::Printf(TEXT("Spawned enemy: %s (%s)"), *GetNameSafe(NewBot), *GetNameSafe(MonsterData)));
+
+				// Grant special actions, buffs etc.
+				USActionComponent* ActionComp = Cast<USActionComponent>(NewBot->GetComponentByClass(USActionComponent::StaticClass()));
+				if (ActionComp)
+				{
+					for (TSubclassOf<USAction> ActionClass : MonsterData->Actions)
+					{
+						ActionComp->AddAction(NewBot, ActionClass);
+					}
+				}
+			}
+		}
 	}
 }
 

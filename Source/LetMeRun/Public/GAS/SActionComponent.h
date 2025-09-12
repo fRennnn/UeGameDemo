@@ -9,6 +9,8 @@
 
 class USAction;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActionsStateChanged,USActionComponent*,OwningComp,USAction*,Action);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class LETMERUN_API USActionComponent : public UActorComponent
 {
@@ -40,11 +42,13 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Actions")
 	TArray< TSubclassOf<USAction>> DefaultActions;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(BlueprintReadOnly,Replicated)
 	TArray<USAction*> Actions;
 
 	UFUNCTION(Server,Reliable)
 	void ServerStartAction(AActor* Instigator, FName ActionName);
+
+	
 
 	UFUNCTION(Server,Reliable)
 	void ServerStopAction(AActor* Instigator, FName ActionName);
@@ -55,6 +59,12 @@ protected:
 	
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 public:
+
+	UPROPERTY(BlueprintAssignable)
+	FOnActionsStateChanged OnActionsStarted;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnActionsStateChanged OnActionsStopped;
 	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	

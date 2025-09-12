@@ -4,10 +4,8 @@
 #include "SPlayerController.h"
 
 #include "EnhancedInputComponent.h"
-#include "InputState.h"
 #include "Blueprint/UserWidget.h"
-#include "GameFramework/Character.h"
-#include "GameFramework/PlayerState.h"
+
 
 void ASPlayerController::SetPawn(APawn* InPawn)
 {
@@ -38,9 +36,10 @@ void ASPlayerController::TogglePauseMenu()
 
 		bShowMouseCursor = false;
 		SetInputMode(FInputModeGameOnly());
+		SetPause(false);
 		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("BINDING ACTION "));
+			// UE_LOG(LogTemp, Warning, TEXT("BINDING ACTION "));
 			EnhancedInputComponent->BindAction(PlayerPause,ETriggerEvent::Triggered,this,&ASPlayerController::TogglePauseMenu);
 		}
 		return;
@@ -52,10 +51,10 @@ void ASPlayerController::TogglePauseMenu()
 		PauseMenuInstance->AddToViewport(100);
 		bShowMouseCursor = true;
 		SetInputMode(FInputModeUIOnly());
-
+		SetPause(true);
 		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("CLEAR ACTION BINDING"));
+			// UE_LOG(LogTemp, Warning, TEXT("CLEAR ACTION BINDING"));
 			EnhancedInputComponent->ClearActionBindings();
 		}
 	}

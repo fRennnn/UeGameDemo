@@ -16,11 +16,18 @@ void USAction::StartAction_Implementation(AActor* Instigator)
 
 	RepData.bIsRunning = true;
 	RepData.Instigator = Instigator;
+	// If you are the server
+	if (GetOwningComponent()->GetOwnerRole() == ROLE_Authority)
+	{
+		TimeStarted = GetWorld()->TimeSeconds;
+	}
+	
+	
+	GetOwningComponent()->OnActionsStarted.Broadcast(GetOwningComponent(),this);
 }
 
 void USAction::StopAction_Implementation(AActor* Instigator)
 {
-
 	LogOnScreen(this,FString::Printf(TEXT("Stopped: %s"),*ActionName.ToString()),FColor::White);
 	//ensureAlways(bIsRunning);
 	
@@ -29,6 +36,8 @@ void USAction::StopAction_Implementation(AActor* Instigator)
 
 	RepData.bIsRunning = false;
 	UE_LOG(LogTemp,Error,TEXT("Set RUnning is False"));
+
+	GetOwningComponent()->OnActionsStopped.Broadcast(GetOwningComponent(),this);
 }
 
 bool USAction::CanStart_Implementation(AActor* Instigator)
@@ -56,6 +65,7 @@ bool USAction::IsRunning() const
 {
 	return RepData.bIsRunning;
 }
+
 
 UWorld* USAction::GetWorld() const
 {
@@ -87,6 +97,7 @@ void USAction::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLi
 
 	DOREPLIFETIME(USAction, RepData);
 	DOREPLIFETIME(USAction, ActionComp);
+	DOREPLIFETIME(USAction, TimeStarted);
 }
 
 void USAction::OnRep_RepData()

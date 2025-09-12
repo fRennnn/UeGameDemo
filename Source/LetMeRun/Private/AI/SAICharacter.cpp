@@ -20,7 +20,6 @@ ASAICharacter::ASAICharacter()
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensingComp");
 	AttributeComp   = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
 	ActionComp = CreateDefaultSubobject<USActionComponent>("ActionComp");
-	//ActionComp = CreateDefaultSubobject<USActionComponent>("ActionComp");
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic,ECR_Ignore);
@@ -44,8 +43,7 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 		{
 			SetTargetActor(InstigatorActor);
 		}
-
-
+		
 		if (ActiveHealthBar == nullptr)
 		{
 			ActiveHealthBar = CreateWidget<USWorldUserWidget>(GetWorld(), HealthBarWidgetClass);
@@ -53,10 +51,13 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 			{
 				ActiveHealthBar->AttachedActor = this;
 				ActiveHealthBar->AddToViewport();
+			}else
+			{
+				UE_LOG(LogTemp,Error,TEXT("Hp Widget Death"));
 			}
 		}
-		//GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
-
+		
+		// If AI die
 		if (NewHealth <= 0.0f)
 		{
 			// stop BT
@@ -74,7 +75,7 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 			GetCharacterMovement()->DisableMovement();
 			
 			// set lifespan
-			SetLifeSpan(10.0f);
+			SetLifeSpan(5.0f);
 		}
 	}
 }
@@ -98,6 +99,9 @@ void ASAICharacter::MulticastPawnSeen_Implementation()
 		// Index of 10 (or anything higher than default of 0) places this on top of any other widget.
 		// May end up behind the minion health bar otherwise.
 		NewWidget->AddToViewport(10);
+	}else
+	{
+		UE_LOG(LogTemp,Error,TEXT("This Widget Death"));
 	}
 }
 
@@ -115,7 +119,7 @@ AActor* ASAICharacter::GetTargetActor() const
 	AAIController* AIC = Cast<AAIController>(GetController());
 	if (AIC)
 	{
-		return Cast<AActor>(AIC->GetBlackboardComponent()->GetValueAsObject(TargetActorKey));
+		return Cast<AActor>(AIC->GetBlackboardComponent()->GetValueAsObject(TargetActorKey)); // Issue
 	}
 
 	return nullptr;

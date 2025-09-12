@@ -129,7 +129,6 @@ bool USAttributeComponent::IsActorAlive(AActor* Actor)
 
 void USAttributeComponent::MulticastRageChanged_Implementation(AActor* InstigatorActor, float NewRage, float Delta)
 {
-	UE_LOG(LogTemp,Display,TEXT("fuck"));
 	OnRageChanged.Broadcast(InstigatorActor, this, NewRage, Delta);
 }
 
@@ -157,8 +156,6 @@ float USAttributeComponent::GetRage() const
 {
 	return Rage;
 }
-
-
 
 void USAttributeComponent::MulticastHealthChanged_Implementation(AActor* InstigatorActor, float NewHealth, float Delta)
 {

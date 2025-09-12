@@ -47,6 +47,8 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Action")
 	bool CanStart(AActor* Instigator);
+
+	
 	
 	virtual UWorld* GetWorld() const override;
 
@@ -55,11 +57,19 @@ public:
 	/* Set this Action AutoStart when we add this to the ActionComponent */
 	UPROPERTY(EditDefaultsOnly, Category = "Action")
 	bool bAutoStart;
+
+	
 	
 protected:
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,Category = "UI")
+	TSoftObjectPtr<UTexture2D> Icon;
+	
 	UPROPERTY(Replicated)
-	USActionComponent* ActionComp;
+	USActionComponent* ActionComp; 
+
+	UPROPERTY(Replicated)
+	float TimeStarted;
 	
 	/* Tags added to owning actor when activated, removed when action stops */
 	UPROPERTY(EditDefaultsOnly, Category = "Tags")

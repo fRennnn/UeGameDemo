@@ -26,7 +26,7 @@ EBTNodeResult::Type USBTTask_RangeAttack::ExecuteTask(UBehaviorTreeComponent& Ow
         return EBTNodeResult::Failed;
     }
 
-    // 检查 ProjectileClass 是否有效
+    // Check ProjectileClass is valid or not
     if (!ProjectileClass)
     {
         UE_LOG(LogTemp, Error, TEXT("ProjectileClass is null! Please set it in Blueprint or C++"));
