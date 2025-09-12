@@ -278,13 +278,11 @@ void ASGameModeBase::WriteSaveGame()
 		FActorSaveData SaveData;
 		SaveData.ActorName = Actor->GetName();
 		SaveData.Transform = Actor->GetActorTransform();
-
 		
 		FMemoryWriter MemWriter(SaveData.ByteData);
 		FObjectAndNameAsStringProxyArchive Ar(MemWriter, true);
 		Ar.ArIsSaveGame = true;
 		Actor->Serialize(Ar);
-
 		
 		CurrentSaveGame->SavedActors.Add(SaveData);
 	}
