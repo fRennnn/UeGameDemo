@@ -70,7 +70,7 @@ float USActionEffect::GetTimeRemaining() const
 
 // override this in Blueprint
 void USActionEffect::ExecutePeriodicEffect_Implementation(AActor* Instigator)
-{
+{ 
 	
 }
 
