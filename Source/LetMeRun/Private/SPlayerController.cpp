@@ -29,6 +29,7 @@ void ASPlayerController::OnRep_PlayerState()
 
 void ASPlayerController::TogglePauseMenu()
 {
+	// If Pause Menu exists 
 	if (PauseMenuInstance && PauseMenuInstance->IsInViewport())
 	{
 		PauseMenuInstance->RemoveFromParent();
@@ -37,6 +38,7 @@ void ASPlayerController::TogglePauseMenu()
 		bShowMouseCursor = false;
 		SetInputMode(FInputModeGameOnly());
 		SetPause(false);
+		// Make Sure to rebind.
 		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 		{
 			// UE_LOG(LogTemp, Warning, TEXT("BINDING ACTION "));
@@ -45,6 +47,7 @@ void ASPlayerController::TogglePauseMenu()
 		return;
 	}
 
+	// Pop out Pause Menu
 	PauseMenuInstance = CreateWidget<UUserWidget>(this, PauseMenuClass);
 	if (PauseMenuInstance)
 	{

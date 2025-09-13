@@ -155,8 +155,8 @@ void ASGameModeBase::SpawnBotTimerElapsed()
 	}
 }
 
-//Conment : If Player died, this funtion work.
-//Funtion : Respawn Player
+//Conment: If Player died, this funtion work.
+//Funtion: Respawn Player
 void ASGameModeBase::RespawnPlayerElapsed(AController* Controller)
 {
 	if (ensure(Controller))

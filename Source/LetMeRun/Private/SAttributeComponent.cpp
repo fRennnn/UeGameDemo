@@ -4,6 +4,7 @@
 #include "SAttributeComponent.h"
 
 #include "SGameModeBase.h"
+#include "LetMeRun/LetMeRun.h"
 #include "Net/UnrealNetwork.h"
 
 static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("su.DamageMultiplier"), 1.0f, TEXT("Global Damage Modifier for Attribute Component."), ECVF_Cheat);
@@ -14,9 +15,10 @@ USAttributeComponent::USAttributeComponent()
 	HealthMax = 100;
 	Health = HealthMax;
 
-	SetIsReplicatedByDefault(true);
 	RageMax = 100;
 	Rage = 0;
+
+	SetIsReplicatedByDefault(true);
 }
 
 
@@ -47,6 +49,7 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor,float Delta
 	{
 		return false;
 	}
+	// For debug
 	if (Delta < 0.f)
 	{
 		float DamagedMultiplier = CVarDamageMultiplier.GetValueOnGameThread();
