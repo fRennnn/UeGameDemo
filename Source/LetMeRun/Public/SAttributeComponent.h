@@ -25,9 +25,6 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
-	/*UPROPERTY(ReplicatedUsing = "")
-	bool bIsAlive;*/
 	
 	UFUNCTION(NetMulticast, Reliable)// @FIXME: mark as unreliable once we moved the 'state' our of scharacter
 	void MulticastHealthChanged(AActor* InstigatorActor, float NewHealth, float Delta);

@@ -78,7 +78,7 @@ void ASGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay,Delegate,RespawnDelay,false);
 	}
 	
-	// 击杀给予分数
+	/*// 击杀给予分数
 	APawn* KillerPawn = Cast<APawn>(Killer);
 	if (KillerPawn)
 	{
@@ -88,7 +88,7 @@ void ASGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 			UE_LOG(LogTemp,Error,TEXT("AI Dead"));
 			PS->AddCredits(CreditsPerKill);
 		}
-	}
+	}*/
 }
 
 void ASGameModeBase::KillAllBot()
