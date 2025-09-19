@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BaseAICharacter.h"
 #include "GameFramework/Character.h"
 #include "SAICharacter.generated.h"
 
@@ -12,16 +13,10 @@ class UUserWidget;
 class USWorldUserWidget;
 class USActionComponent;
 UCLASS()
-class LETMERUN_API ASAICharacter : public ACharacter
+class LETMERUN_API ASAICharacter : public ABaseAICharacter
 {
 	GENERATED_BODY()
 protected:
-
-	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="Components")
-	USAttributeComponent* AttributeComp;
-
-	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="Components")
-	USActionComponent* ActionComp;
 	
 	UPROPERTY(VisibleAnywhere,Category="Components")
 	UPawnSensingComponent* PawnSensingComp;
@@ -29,6 +24,7 @@ protected:
 	UPROPERTY(EditAnywhere,Category = "Attack")
 	UAnimMontage* AttackAnim;
 
+	// ReSharper disable once CppUE4ProbableMemoryIssuesWithUObject
 	USWorldUserWidget* ActiveHealthBar;
 
 	UFUNCTION(NetMulticast, Unreliable)
@@ -37,16 +33,11 @@ protected:
 	/**
 	 *  When Enemy Found Player,This work.
 	 */
+	// ReSharper disable once CppUE4ProbableMemoryIssuesWithUObject
 	USWorldUserWidget* SpottedBar;
-
-	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UUserWidget> HealthBarWidgetClass;
-
+	
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> SpottedWidgetClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Effects")
-	FName TargetActorKey;
 
 	UFUNCTION(BlueprintCallable, Category = "AI")
 	void SetTargetActor(AActor* NewTarget);
@@ -60,7 +51,7 @@ protected:
 	void OnPawnSeen(APawn* Pawn);
 
 	UFUNCTION()
-	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
+	virtual void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta) override;
 
 public:
 	// Sets default values for this character's properties
