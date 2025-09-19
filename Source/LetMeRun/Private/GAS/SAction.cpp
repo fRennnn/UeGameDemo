@@ -12,7 +12,7 @@ void USAction::StartAction_Implementation(AActor* Instigator)
 	LogOnScreen(this,FString::Printf(TEXT("Started: %s"),*ActionName.ToString()),FColor::Green);
 	
 	USActionComponent* Comp = GetOwningComponent();	
-	Comp->ActiveGamePlayTags.AppendTags(GrantsTags); // 3:24 这里报错，教程中的Action是临时为了同步做的。和现在的技能不太一样。
+	Comp->ActiveGamePlayTags.AppendTags(GrantsTags); 
 
 	RepData.bIsRunning = true;
 	RepData.Instigator = Instigator;

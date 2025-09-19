@@ -10,7 +10,7 @@
  * 
  */
 class USWorldUserWidget;
-
+class UAISense_Damage;
 UCLASS()
 class LETMERUN_API ATDAICharacter : public ABaseAICharacter
 {
@@ -28,5 +28,6 @@ protected:
 	// ReSharper disable once CppUE4ProbableMemoryIssuesWithUObject
 	USWorldUserWidget* ActiveHealthBar;
 
+	
 	virtual void PostInitializeComponents() override;
 };

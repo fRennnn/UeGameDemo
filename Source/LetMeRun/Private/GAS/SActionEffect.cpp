@@ -17,9 +17,9 @@ void USActionEffect::StartAction_Implementation(AActor* Instigator)
 	
 	/*
 	 * Trigger this effect every Period seconds for Duration
-	 * Example : Duration = 10.f  Periods = 2.f
-	 * This mean Trigger this effect every 2 seconds for 10s
-	 * If set Duration or Period to 0,These if statements below will never work.
+	 * Example: Duration = 10.f Periods = 2.f
+	 * This means Trigger this effect every 2 seconds for the 10s
+	 * If set Duration or Period to 0,These if the statements below never work.
 	 */
 	if (Duration > 0.0f)
 	{

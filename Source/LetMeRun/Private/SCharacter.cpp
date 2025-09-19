@@ -244,7 +244,6 @@ FVector ASCharacter::LineTrace(FVector& Start, FVector& Direction)
 void ASCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
 }
 
 void ASCharacter::Move(const FInputActionValue& Value)
