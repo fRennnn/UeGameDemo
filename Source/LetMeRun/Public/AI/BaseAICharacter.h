@@ -6,6 +6,10 @@
 #include "GameFramework/Character.h"
 #include "BaseAICharacter.generated.h"
 
+
+class USAttributeComponent;
+class USActionComponent;
+
 UCLASS()
 class LETMERUN_API ABaseAICharacter : public ACharacter
 {
@@ -29,6 +33,5 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	FName TargetActorKey;
 
-	UFUNCTION()
 	virtual void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
 };

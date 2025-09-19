@@ -28,6 +28,7 @@ ASAICharacter::ASAICharacter()
 void ASAICharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+	UE_LOG(LogTemp, Warning, TEXT("ASAICharacter::PostInitializeComponents"));
 	PawnSensingComp->OnSeePawn.AddDynamic(this,&ASAICharacter::OnPawnSeen);
 	AttributeComp->OnHealthChanged.AddDynamic(this,&ASAICharacter::OnHealthChanged);
 }
@@ -35,47 +36,48 @@ void ASAICharacter::PostInitializeComponents()
 void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth,
 	float Delta)
 {
+	UE_LOG(LogTemp,Display,TEXT("OnHealthChanged in SAI"));
 	if (Delta < 0.0f)
-	{
-		if (InstigatorActor != this)
-		{
-			SetTargetActor(InstigatorActor);
-		}
-		
-		if (ActiveHealthBar == nullptr)
-		{
-			ActiveHealthBar = CreateWidget<USWorldUserWidget>(GetWorld(), HealthBarWidgetClass);
-			if (ActiveHealthBar)
-			{
-				ActiveHealthBar->AttachedActor = this;
-				ActiveHealthBar->AddToViewport();
-			}else
-			{
-				UE_LOG(LogTemp,Error,TEXT("Hp Widget Death"));
-			}
-		}
-		
-		// If AI die
-		if (NewHealth <= 0.0f)
-		{
-			// stop BT
-			AAIController* AIC = Cast<AAIController>(GetController());
-			if (AIC)
-			{
-				AIC->GetBrainComponent()->StopLogic("Killed");
-			}
-
-			// ragdoll
-			GetMesh()->SetAllBodiesSimulatePhysics(true);
-			GetMesh()->SetCollisionProfileName("Ragdoll");
-
-			GetCapsuleComponent()->SetCollisionEnabled((ECollisionEnabled::Type::NoCollision));
-			GetCharacterMovement()->DisableMovement();
-			
-			// set lifespan
-			SetLifeSpan(5.0f);
-		}
-	}
+     	{
+     		if (InstigatorActor != this)
+     		{
+     			SetTargetActor(InstigatorActor);
+     		}
+     		
+     		if (ActiveHealthBar == nullptr)
+     		{
+     			ActiveHealthBar = CreateWidget<USWorldUserWidget>(GetWorld(), HealthBarWidgetClass);
+     			if (ActiveHealthBar)
+     			{
+     				ActiveHealthBar->AttachedActor = this;
+     				ActiveHealthBar->AddToViewport();
+     			}else
+     			{
+     				UE_LOG(LogTemp,Error,TEXT("Hp Widget Death"));
+     			}
+     		}
+     		
+     		// If AI die
+     		if (NewHealth <= 0.0f)
+     		{
+     			// stop BT
+     			AAIController* AIC = Cast<AAIController>(GetController());
+     			if (AIC)
+     			{
+     				AIC->GetBrainComponent()->StopLogic("Killed");
+     			}
+     
+     			// ragdoll
+     			GetMesh()->SetAllBodiesSimulatePhysics(true);
+     			GetMesh()->SetCollisionProfileName("Ragdoll");
+     
+     			GetCapsuleComponent()->SetCollisionEnabled((ECollisionEnabled::Type::NoCollision));
+     			GetCharacterMovement()->DisableMovement();
+     			
+     			// set lifespan
+     			SetLifeSpan(5.0f);
+     		}
+     	}
 }
 
 void ASAICharacter::OnPawnSeen(APawn* Pawn)
