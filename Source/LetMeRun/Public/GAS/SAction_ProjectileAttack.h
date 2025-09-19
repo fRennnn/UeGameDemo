@@ -33,6 +33,7 @@ protected:
 	UFUNCTION()
 	void AttackDelay_Elapsed(ACharacter* InstigatorCharacter);
 
+	UPROPERTY(EditAnywhere,Category = "Attack")
 	FName HandSocketName;
 public:
 	virtual void StartAction_Implementation(AActor* Instigator) override;
