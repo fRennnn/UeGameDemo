@@ -34,7 +34,7 @@ ASGameModeBase::ASGameModeBase()
 	Credit = 0;
 	CreditsPerKill = 10.f;
 	PlayerStateClass = ASPlayerState::StaticClass();
-
+	
 	SlotName = "SaveGame01";
 }
 

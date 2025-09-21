@@ -27,7 +27,6 @@ protected:
 
 	// ReSharper disable once CppUE4ProbableMemoryIssuesWithUObject
 	USWorldUserWidget* ActiveHealthBar;
-
 	
 	virtual void PostInitializeComponents() override;
 };
