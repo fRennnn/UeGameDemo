@@ -19,15 +19,11 @@ USAttributeComponent::USAttributeComponent()
 	SetIsReplicatedByDefault(true);
 }
 
-
 // Called when the game starts
 void USAttributeComponent::BeginPlay()
 {
 
 }
-
-
-
 
 bool USAttributeComponent::IsAlive() const
 {
