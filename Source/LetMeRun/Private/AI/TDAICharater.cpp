@@ -36,6 +36,11 @@ void ATDAICharacter::PostInitializeComponents()
 	AttributeComp->OnHealthChanged.AddDynamic(this,&ATDAICharacter::OnHealthChanged);
 }
 
+void ATDAICharacter::PrimaryAttack()
+{
+	PlayAnimMontage(AttackAnim);
+}
+
 void ATDAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta)
 {
 	UE_LOG(LogTemp,Error,TEXT("OnHealthChanged in ATDAICharater"));

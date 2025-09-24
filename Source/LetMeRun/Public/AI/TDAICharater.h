@@ -17,6 +17,9 @@ class LETMERUN_API ATDAICharacter : public ABaseAICharacter
 	GENERATED_BODY()
 public:
 	ATDAICharacter();
+
+	UFUNCTION()
+	void PrimaryAttack();
 protected:
 	
 	UFUNCTION()
@@ -29,4 +32,9 @@ protected:
 	USWorldUserWidget* ActiveHealthBar;
 	
 	virtual void PostInitializeComponents() override;
+
+	UPROPERTY(EditAnywhere,Category = "Attack")
+	UAnimMontage* AttackAnim;
+	
+	
 };

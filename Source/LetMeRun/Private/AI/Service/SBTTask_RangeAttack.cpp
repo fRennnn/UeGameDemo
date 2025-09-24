@@ -6,13 +6,14 @@
 #include "AIController.h"
 #include "SAttributeComponent.h"
 #include "AI/SAICharacter.h"
+#include "AI/TowerCharacter.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "GameFramework/Character.h"
 
 EBTNodeResult::Type USBTTask_RangeAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	AAIController* MyController = OwnerComp.GetAIOwner();
-    ASAICharacter* MyCharacter = Cast<ASAICharacter>(MyController->GetPawn());
+    ATowerCharacter* MyCharacter = Cast<ATowerCharacter>(MyController->GetPawn());
     
     if (!ensure(MyCharacter))
     {
@@ -54,6 +55,8 @@ EBTNodeResult::Type USBTTask_RangeAttack::ExecuteTask(UBehaviorTreeComponent& Ow
         MuzzleLocation += MyPawn->GetActorForwardVector() * 100.0f;
     }
 
+
+    // Find the Target that AI want to shoot
     AActor* TargetActor = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject("TargetActor"));
     if (!TargetActor)
     {
@@ -75,7 +78,7 @@ EBTNodeResult::Type USBTTask_RangeAttack::ExecuteTask(UBehaviorTreeComponent& Ow
     Direction.Normalize(); // 标准化方向向量
     FRotator Rotator = Direction.Rotation();
 
-    // 设置生成参数
+    // Set Spawning Parameters
     FActorSpawnParameters Params;
     Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     Params.Owner = MyPawn; // 设置拥有者
